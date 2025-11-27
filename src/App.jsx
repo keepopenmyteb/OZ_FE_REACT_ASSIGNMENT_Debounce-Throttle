@@ -1,14 +1,27 @@
-import { useState } from "react";
+import React, { useState, useCallback } from 'react';
+import { debounce, throttle } from 'lodash';
 import "./App.css";
 
 function App() {
-  const [query, setQuery] = useState("");
-  const [searchString, setSearchString] = useState("");
+  const [queryDebounce, setQueryDebounce] = useState('');
+  const [queryThrottle, setQueryThrottle] = useState('');
 
-  const handleChange = (event) => {
-    setQuery(event.target.value);
-    console.log("검색 쿼리:", event.target.value);
-  };
+  const handleDebounceChange = useCallback(
+    debounce((value) => {
+      console.log('Debounce 검색 쿼리:', value);
+      setQueryDebounce(value);
+    }, 500),
+    []
+  );
+
+  const handleThrottleChange = useCallback(
+    throttle((value) => {
+      console.log('Throttle 검색 쿼리:', value);
+      setQueryThrottle(value);
+    }, 1000),
+    []
+  );
+
 
   return (
     <div className="container">
@@ -17,23 +30,24 @@ function App() {
         <br />
         이용한 검색
       </h1>
-      <div>
+        <div>
         <h2>Debounce</h2>
         <input
           type="text"
           placeholder="Debounce를 이용한 검색..."
-          onChange={handleChange}
+          onChange={(e) => handleDebounceChange(e.target.value)}
         />
+        <p>검색어: {queryDebounce}</p>
       </div>
       <div>
         <h2>Throttle</h2>
         <input
           type="text"
           placeholder="Throttle을 이용한 검색..."
-          onChange={handleChange}
+          onChange={(e) => handleThrottleChange(e.target.value)}
         />
+        <p>검색어: {queryThrottle}</p>
       </div>
-      <p>{searchString}</p>
     </div>
   );
 }
